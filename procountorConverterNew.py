@@ -61,13 +61,25 @@ def read_workbook(filepath):
     worksheet = workbook["in"]
     row_data = []
     for row in worksheet.iter_rows(values_only=True, max_col=6):
+        print(row)
+    
+    for row in worksheet.iter_rows(values_only=True, max_col=6):
+        used_date = row[0]
+        
+        if isinstance(row[0], str):
+            try:
+                used_date = parse_date(row[0], dayfirst=True)
+            except:
+                print(f"Something went wrong with row {row} date parsing! Skipping row...")
+                continue
+        
         row_data.append(
             {
                 "name": row[1],
                 "credit": row[2],
                 "debit": row[3],
                 "amount": row[5] or row[4],
-                "date": parse_date(row[0], dayfirst=True),
+                "date": used_date,
             }
         )
 
@@ -84,6 +96,9 @@ def write_row_data(filepath, row_data):
     dates = sorted(by_date.keys())
 
     root_path = Path(os.path.splitext(filepath)[0] + "_OUTPUT")
+    
+    if not root_path.is_dir():
+        root_path.mkdir()
     
     for i in dates:
         workbook = openpyxl.Workbook()
