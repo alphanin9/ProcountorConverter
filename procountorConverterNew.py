@@ -93,14 +93,12 @@ def write_row_data(filepath, row_data):
             by_date[i["date"]] = []
         by_date[i["date"]].append(i)
 
-    dates = sorted(by_date.keys())
-
     root_path = Path(os.path.splitext(filepath)[0] + "_OUTPUT")
     
     if not root_path.is_dir():
         root_path.mkdir()
     
-    for i in dates:
+    for i in by_date.keys():
         workbook = openpyxl.Workbook()
         worksheet = workbook.active
 
